@@ -1,0 +1,40 @@
+name: Repo File Sync - Sys
+
+on:
+  schedule:
+    - cron: '0 0 * * *' # Runs every day at midnight
+  workflow_dispatch: # Allows manual trigger of the workflow
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Destination Repository
+        uses: actions/checkout@v3
+
+      - name: Sync Files from Sys Repository
+        uses: repo-sync/github-sync@v3.3.0
+        with:
+          source_repo: Tuananh4403/PetHealthSys
+          source_branch: main
+          destination_repo: ${{ github.repository }}
+          destination_branch: main
+          delete_orphaned_files: true
+          force_update: true
+          token: ${{ secrets.SOURCE_REPO_TOKEN }}
+          # Customize files to include or exclude for sys
+          include: |
+            sys/*
+          exclude: |
+            client/*
+
+      - name: Commit and Push Changes
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add .
+          git commit -m 'Sync sys files from source repository'
+          git push origin main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
