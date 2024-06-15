@@ -1,0 +1,31 @@
+{
+    "auth": {
+      "login": {
+        "email": "user@example.com",
+        "password": "12345678@",
+        "token": "fake-jwt-token",
+        "user": {
+          "id": 1,
+          "name": "John Doe",
+          "email": "user@example.com"
+        }
+      },
+      "google": {
+        "token": "fake-google-token",
+        "user": {
+          "id": 2,
+          "name": "Jane Smith",
+          "email": "jane.smith@gmail.com"
+        }
+      },
+      "facebook": {
+        "token": "fake-facebook-token",
+        "user": {
+          "id": 3,
+          "name": "Alice Johnson",
+          "email": "alice.johnson@facebook.com"
+        }
+      }
+    }
+  }
+  
