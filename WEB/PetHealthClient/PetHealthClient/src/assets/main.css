@@ -1,0 +1,22 @@
+ @import './base.css'; 
+
+#app {
+  /* padding: 2rem; */
+  font-weight: normal;
+  display: flex;
+  flex-direction: column;
+}
+main {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+
+@media (hover: hover) {
+  a:hover {
+    background-color: hsla(160, 100%, 37%, 0.2);
+  }
+}
+
+
