@@ -1,4 +1,5 @@
-# Pet Care Management System
+![image](https://github.com/Tuananh4403/N1SE1841SWP/assets/90849367/31d74ff9-6b18-4cbf-968a-49bcdc3885ed)
+
 
 ## Introduction
 
@@ -50,7 +51,7 @@ The Pet Care Management System is designed to streamline the management of pet h
 
 
 ### Illustration
-![Pet Care Management System](https://example.com/illustration.png) 
+![Pet Care Management System]() 
 
 This image illustrates the primary user interface of the Pet Care Management System, showcasing the main dashboard accessible by customers, employees, veterinarians, and admins. 
 
