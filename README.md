@@ -55,17 +55,7 @@ The Pet Care Management System is designed to streamline the management of pet h
 
 This image illustrates the primary user interface of the Pet Care Management System, showcasing the main dashboard accessible by customers, employees, veterinarians, and admins. 
 
-By using this system, pet care services can be managed more efficiently, providing better care for pets and a smoother experience for their owners.
-
-
-| Name                     | User Stories        |
-|--------------------------|---------------------|
-| Pham Tran Anh Tuan       | US-1                |
-| Le Hoai Thong            | US-5                |
-| Nguyen Le Chi            | US-2                |
-| Le Huu Hai Tri           | US-24               |
-| Luu Quang Vu             | US-23               |
-| Phan Quang Kha           | US-33               |
+By using this system, pet care services can be managed more efficiently, providing betDuy Kha           | US-33               |
 
 
 
