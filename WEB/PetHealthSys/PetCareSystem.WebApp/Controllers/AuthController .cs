@@ -23,6 +23,7 @@ namespace PetCareSystem.WebApp.Controllers
         {
             _authService = authService;
         }
+
         [AllowAnonymous]
         [HttpPost("authenticate")]
         public async Task<IActionResult> Login(AuthenticateRequest model)
@@ -35,9 +36,9 @@ namespace PetCareSystem.WebApp.Controllers
             try
             {
                 var result = await _authService.LoginAsync(model.Username, model.Password);
-                if (result.Success)
+                if (result != null  )
                 {
-                    return Ok(new { message = "Login successful", token = result.Token });
+                    return Ok(new { message = "Login successful", result });
                 }
 
                 return Unauthorized(new { message = "Username or password is incorrect" });
@@ -49,6 +50,7 @@ namespace PetCareSystem.WebApp.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An error occurred during login" });
             }
         }
+        
         [AllowAnonymous]
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterRequest model)
@@ -111,7 +113,7 @@ namespace PetCareSystem.WebApp.Controllers
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return Ok("Logged out successfully.");
         }
-        [AllowAnonymous]
+
         [HttpPost("create-role")]
         public async Task<IActionResult> CreateRole(CreateRoleReq model)
         {
@@ -122,6 +124,19 @@ namespace PetCareSystem.WebApp.Controllers
 
             await _authService.CreateRole(model);
             return Ok("Role have been created");
+        }
+
+        [HttpGet("get-role")]
+        public async Task<IActionResult> GetListRole()
+        {
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var roles = await _authService.GetListRole();
+            return Ok(roles);
         }
 
     }

@@ -11,6 +11,7 @@ using System.Text;
 using Microsoft.Extensions.Configuration;
 using PetCareSystem.Services.Helpers;
 using PetCareSystem.Data.Repositories.Roles;
+using PetCareSystem.Data.Repositories.Doctors;
 
 namespace PetCareSystem.Services.Services.Auth
 {
@@ -19,31 +20,40 @@ namespace PetCareSystem.Services.Services.Auth
         private readonly IUserRepository _userRepository;
         private readonly ICustomerRepository _customerRepository;
         private readonly IRoleRepository _roleRepository;
+        private readonly IDoctorRepository _doctorRepository;
 
-        public AuthService(IUserRepository userRepository, ICustomerRepository customerRepository, IRoleRepository roleRepository)
+        public AuthService(IUserRepository userRepository, ICustomerRepository customerRepository, IRoleRepository roleRepository, IDoctorRepository doctorRepository)
         {
             _userRepository = userRepository;
             _customerRepository = customerRepository;
             _roleRepository = roleRepository;
+            _doctorRepository = doctorRepository;
         }
 
-        public async Task<AuthenticationResult> LoginAsync(string username, string password)
+        public async Task<AuthenticateResponse ?> LoginAsync(string username, string password)
         {
-            var user = await _userRepository.GetUserByUsernameAsync(username);
+            User user = await _userRepository.GetUserByEmail(username);
             if (user == null || !VerifyPasswordHash(password, user.Password))
             {
-                return new AuthenticationResult { Success = false, Message = "Invalid credentials" };
+                return null;
             }
 
             var token = GenerateToken(user);
-            return new AuthenticationResult { Success = true, Token = token };
+            return new AuthenticateResponse( user, token );
         }
 
         public async Task RegisterAsync(RegisterRequest model)
         {
-            if(_userRepository.GetUserByEmail(model.Email) == null || _userRepository.GetUserByPhone(model.Phone) == null)
+            var existingUserByEmail = await _userRepository.GetUserByEmail(model.Email);
+            if (existingUserByEmail != null)
             {
-                throw new AppException("Email  or Phone is already taken");
+                throw new AppException("Email is already taken");
+            }
+
+            var existingUserByPhone = await _userRepository.GetUserByPhone(model.Phone);
+            if (existingUserByPhone != null)
+            {
+                throw new AppException("Phone number is already taken");
             }
             var user = new User
             {
@@ -72,9 +82,10 @@ namespace PetCareSystem.Services.Services.Auth
             else
             {
                 Role role = await _roleRepository.GetRoleByIdAsync(model.RoleId ?? 2);
-                if(role.Title == "ST")
+                if(role.Title == "DT")
                 {
-
+                    Doctor doc =new Doctor { UserId = user.Id };
+                    await _doctorRepository.AddDoctorAsync(doc);
                 }
             }
         }
@@ -128,7 +139,16 @@ namespace PetCareSystem.Services.Services.Auth
                 Title = model.Title,
                 Name = model.Name
             };
-            await _roleRepository.Create(role);
+            await _roleRepository.AddAsync(role);
+        }
+
+        public async Task<IEnumerable<Role>> GetListRole()
+        {
+            return await _roleRepository.GetAllAsync(); 
+        }
+        public async Task<IEnumerable<User>> GetAll()
+        {
+            return await _userRepository.GetAll();
         }
     }
 }

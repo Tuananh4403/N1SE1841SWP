@@ -2,6 +2,7 @@
 using PetCareSystem.Data.Entites;
 using PetCareSystem.Data.Repositories.Services;
 using PetCareSystem.Services.Models.Booking;
+using PetCareSystem.Services.Enums;
 using PetCareSystem.Services.Models.Services;
 using System;
 using System.Collections.Generic;
@@ -15,38 +16,72 @@ namespace PetCareSystem.Services.Services.Serivces
     {
         private readonly IServicesRepository _servicesRepository;
         private readonly IConfiguration _configuration;
-        private readonly Dictionary<int, string> _categoryMap;
-        public ServiceServices(IServicesRepository servicesRepository, IConfiguration configuration )
+        public ServiceServices(IServicesRepository servicesRepository, IConfiguration configuration)
         {
             _servicesRepository = servicesRepository;
             _configuration = configuration;
-
-            _categoryMap = new Dictionary<int, string>
-        {
-            { 1, configuration["Category:Service:Name"] },
-            { 2, configuration["Category:Medicine:Id"] },
-            { 3, configuration["Category:Vaccine:Id"] }
-        };
         }
         public async Task<bool> CreateServiceAsync(CreateServiceReq serviceReq)
         {
 
             var service = new Service()
             {
-                TypeId      = serviceReq.TypeOfService,
-                Code        = serviceReq.Code,
-                Name        = serviceReq.Name,
-                Price       = serviceReq.Price,
-                Status      = "NEW",
-                Note        = serviceReq.Note
+                TypeId = serviceReq.TypeOfService,
+                Code = serviceReq.Code,
+                Name = serviceReq.Name,
+                Price = serviceReq.Price,
+                Status = "NEW",
+                Note = serviceReq.Note
             };
 
             // Save the service entity to the database
-            return await _servicesRepository.AddServiceAsync(service);
+            return await _servicesRepository.AddAsync(service);
         }
-        public string GetCategoryName(int categoryId)
+        public object GetServiceByCategory(int categoryId)
         {
-            return _categoryMap.TryGetValue(categoryId, out var categoryName) ? categoryName : "Unknown";
+            ServiceCategory category = GetServiceCategoryById(categoryId);
+            string categoryName = category.ToString(); // Converts enum to string
+            switch (category)
+            {
+                case ServiceCategory.General:
+                    return new { Category = categoryName, Data = GetGeneralService() };
+                case ServiceCategory.Medicine:
+                    return new { Category = categoryName, Data = GetMedicine() };
+                case ServiceCategory.Vaccine:
+                    return new { Category = categoryName, Data = GetVaccine() };
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(category), category, null);
+            }
+        }
+
+        private object GetGeneralService()
+        {
+            // Implementation
+            return new { Description = "General service " };
+        }
+
+        private object GetMedicine()
+        {
+            // Implementation
+            return new { Description = "Medicine service" };
+        }
+
+        private object GetVaccine()
+        {
+            // Implementation
+            return new { Description = "Vaccine service" };
+        }
+        public ServiceCategory GetServiceCategoryById(int id)
+        {
+            if (!Enum.IsDefined(typeof(ServiceCategory), id))
+            {
+                throw new ArgumentOutOfRangeException(nameof(id), id, "Invalid service category ID");
+            }
+            return (ServiceCategory)id;
+        }
+        public async Task<(IEnumerable<Service> Services, int TotalCount)> GetListServiceAsync(string searchString, int TypeId = 1, int pageNumber = 1, int pageSize = 10)
+        {
+            return await _servicesRepository.GetListService(searchString, TypeId, pageNumber, pageSize);
         }
     }
 }

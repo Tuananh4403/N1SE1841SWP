@@ -1,0 +1,11 @@
+SUMMARY,DESCRIPTION,ISSUE TYPE,EPIC
+RC1 - Verify Username, UserName - UserName can not be blank,Testcase,Manage Account
+RC2 - Verify Username, UserName - UserName cannot contain spaces,Testcase,Manage Account
+RC3 - Verify First name, FirstName - FirstName can not be blank,Testcase,Manage Account
+RC4 - Verify Last name, LastName - LastName can not be blank,Testcase,Manage Account
+RC5 - Verify Email, Email - The email can not be blank,Testcase,Manage Account
+RC6 - Verify Title, Title - The title can not be blank,Testcase,Manage Account
+RC7 - Verify Password, Password - The password can not be blank,Testcase,Manage Account
+RC8 - Verify Password,Password - The password cannot contain spaces,Testcase,Manage Account
+RC9 - Confirm password cannot be blank,ConfirmPassword - The confirm password can not be blank,Testcase,Manage Account
+RC10 - Confirm password must match the password,ConfirmPassword - The confirm password must match the password,Testcase,Manage Account
