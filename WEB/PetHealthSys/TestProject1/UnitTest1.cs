@@ -1,94 +1,76 @@
-using NUnit.Framework;
-using Moq;
-using PetCareSystem.Services.Services.Pets;
-using PetCareSystem.Services.Models.Pet;
-using PetCareSystem.Data.Repositories.Pets;
-using System.Threading.Tasks;
-using System;
-using PetCareSystem.Data.Entites;
+    using NUnit.Framework;
+    using Moq;
+    using PetCareSystem.Services.Services.Auth;
+    using PetCareSystem.Services.Models.Auth;
+    using PetCareSystem.Data.Entites;
+    using PetCareSystem.Data.Repositories.Roles;
 
-namespace PetCareSystem.Tests
-{
-    [TestFixture]
-    public class PetServiceTests
+    namespace PetCareSystem.Tests
     {
-        private IPetService _petService;
-        private Mock<IPetRepository> _mockPetRepository;
-        private Pet _pet;
-
-        [SetUp]
-        public void Setup()
+        [TestFixture]
+        public class RoleServiceTests
         {
-            _mockPetRepository = new Mock<IPetRepository>();
-            _petService = new PetService(_mockPetRepository.Object, null); 
+            private IAuthService _authService;
+            private Mock<IRoleRepository> _mockRoleRepository;
+            private Role _role;
 
-            _pet = new Pet
+            [SetUp]
+            public void Setup()
             {
-                Id = 1,
-                PetName = "Destiny",
-                KindOfPet = "Cat",
-                Gender = true,
-                Birthday = DateTime.Now.AddYears(-5),
-                Species = "ALN",
-            };
-            _mockPetRepository.Setup(repo => repo.GetPetByIdAsync(_pet.Id)).ReturnsAsync(_pet);
-        }
+                _mockRoleRepository = new Mock<IRoleRepository>();
+                _authService = new AuthService(null, null, _mockRoleRepository.Object, null);
 
-        [Test]
-        public async Task UpdatePetAsync_ValidId_ReturnsTrue()
-        {
-            // Arrange
-            int petId = _pet.Id; 
-            var updatePetRequest = new PetRequest
-            {
-                PetName = "Destiny", 
-                KindOfPet = "Cat", 
-                Gender = false, 
-                Birthday = DateTime.Now.AddYears(-2), 
-                Species = "ALN",
-            };
-            _mockPetRepository.Setup(repo => repo.UpdatePet(
-                It.IsAny<int>(),
-                It.IsAny<string>(),
-                It.IsAny<string>(),
-                It.IsAny<bool>(),
-                It.IsAny<DateTime>(),
-                It.IsAny<string>()
-            )).ReturnsAsync(true);
-            var result = await _petService.UpdatePetAsync(petId, updatePetRequest);
-            Console.WriteLine(result);
-            if (result)
-            {
-                var updatedPet = await _mockPetRepository.Object.GetPetByIdAsync(petId);
-                Console.WriteLine(updatedPet);
+                _role = new Role
+                {
+                    Id = 1,
+                    Title = "AD",
+                    Name = "Admin"
+                };
+
+                _mockRoleRepository.Setup(repo => repo.GetRoleByTitleAsync(_role.Title)).ReturnsAsync((Role)null);
+                _mockRoleRepository.Setup(repo => repo.Create(It.IsAny<Role>())).Callback<Role>(role =>
+                {
+                    // Simulate the creation process and print the role details
+                    Console.WriteLine($"Creating role: {role.Title}, {role.Name}");
+                }).Returns(Task.CompletedTask);
+                
             }
-            Assert.IsTrue(result);
             
-        }
-        
-        [Test]
-        public async Task UpdatePetAsync_InvalidId_ReturnsFalse()
-        {
-            int invalidPetId = 1; 
-            var updatePetRequest = new PetRequest
+            [Test]
+            public async Task CreateRoleAsync_ValidData_PrintsRole()
             {
-                PetName = null,
-                KindOfPet = "Cat",
-                Gender = false,
-                Birthday = DateTime.Now.AddYears(-2),
-                Species = "ALN",
-            };
-            _mockPetRepository.Setup(repo => repo.GetPetByIdAsync(invalidPetId)).ReturnsAsync((Pet)null);
-            _mockPetRepository.Setup(repo => repo.UpdatePet(
-                It.IsAny<int>(),
-                It.IsAny<string>(),
-                It.IsAny<string>(),
-                It.IsAny<bool>(),
-                It.IsAny<DateTime>(),
-                It.IsAny<string>()
-            )).ReturnsAsync(false);
-            var result = await _petService.UpdatePetAsync(invalidPetId, updatePetRequest);
-            Assert.IsFalse(result);
+                // Arrange
+                var createRoleRequest = new CreateRoleReq
+                {
+                    Title = "AD",
+                    Name = "Admin"
+                };
+
+                // Act
+                await _authService.CreateRole(createRoleRequest);
+
+                // Assert
+                _mockRoleRepository.Verify(repo => repo.Create(It.Is<Role>(r => r.Title == createRoleRequest.Title && r.Name == createRoleRequest.Name)), Times.Once);
+            }
+
+            [Test]
+            public async Task CreateRoleAsync_RoleAlreadyExists_ReturnsFalse()
+            {
+                // Arrange
+                var createRoleRequest = new CreateRoleReq
+                {
+                    Title = "AD",
+                    Name = "Admin"
+                };
+
+                _mockRoleRepository.Setup(repo => repo.GetRoleByTitleAsync(_role.Title)).ReturnsAsync(_role);
+
+                 await _authService.CreateRole(createRoleRequest);
+        
+                _mockRoleRepository.Verify(repo => repo.Create(It.IsAny<Role>()), Times.Never);
+            }
+
         }
     }
-}
+        
+
