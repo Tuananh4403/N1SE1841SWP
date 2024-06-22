@@ -10,6 +10,9 @@ using System.Threading.Tasks;
 using System.IdentityModel.Tokens.Jwt;
 using PetCareSystem.Data.Repositories.Customers;
 using Microsoft.IdentityModel.Tokens;
+using PetCareSystem.Services.Services.Auth;
+using PetCareSystem.Services.Helpers;
+using PetCareSystem.Services.Models.Booking;
 
 namespace PetCareSystem.Services.Services.Pets
 {
@@ -25,14 +28,14 @@ namespace PetCareSystem.Services.Services.Pets
         }
         public async Task<bool> RegisterPetAsync(PetRequest model, string token)
         {
-            var userId = _customerRepository.GetUserIdFromToken(token);
+            int? userId = CommonHelpers.GetUserIdByToken(token);
             if (!userId.HasValue || userId <= 0)
             {
                 throw new ArgumentException("Invalid token");
             }
 
-            var user = await _customerRepository.GetCusById((int)userId);
-            if (user == null)
+            var customer = await _customerRepository.GetCusById((int)userId);
+            if (customer == null)
             {
                 throw new ArgumentException("Customer does not exist! You need to register");
             }
@@ -67,7 +70,7 @@ namespace PetCareSystem.Services.Services.Pets
                 Gender = model.Gender,
                 Birthday = model.Birthday,
                 Species = model.Species,
-                CustomerId = user.Id 
+                CustomerId = customer.Id 
             };
 
             
@@ -76,5 +79,59 @@ namespace PetCareSystem.Services.Services.Pets
             
             return true;
         }
+
+        public async Task<PetRequest> GetPetDetailsAsync(int petId)
+        {
+            // check if id pet exist
+            bool exists = await _petRepository.PetExists(petId);
+            if (!exists)
+            {
+                return null;
+            }
+
+            var pet = await _petRepository.GetPetByIdAsync(petId);
+            if (pet == null)
+            {
+                return null;
+            }
+
+
+            var petRequest = new PetRequest
+            {
+                PetName = pet.PetName,
+                KindOfPet = pet.KindOfPet,
+                Gender = pet.Gender,
+                Birthday = pet.Birthday,
+                Species = pet.Species
+            };
+
+            return petRequest;
+        }
+
+        public async Task<IList<Pet>> GetListPet(string petName, string nameOfCustomer, string kindOfPet, string speciesOfPet, bool? genderOfPet, DateTime? birthdayOfPet)
+        {
+            return await _petRepository.GetListPet(petName, nameOfCustomer, kindOfPet, speciesOfPet, genderOfPet, birthdayOfPet);
+        }
+
+        public async Task<bool> UpdatePetAsync(int id, PetRequest updatePet)
+        {
+            bool isUpdated = await _petRepository.UpdatePet(
+                id,
+                updatePet.PetName,
+                updatePet.KindOfPet,
+                updatePet.Gender,
+                updatePet.Birthday,
+                updatePet.Species
+            );
+            return isUpdated;
+        }
+
+        public async Task<bool> DeletePetAsync(int id)
+        {
+            return await _petRepository.DeletePet(id);
+        }
+
+
+
     }
 }

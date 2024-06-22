@@ -24,16 +24,25 @@ namespace PetCareSystem.WebApp.Helpers
             _logger = logger;
         }
 
-        public async Task<Task> Invoke(HttpContext httpContext, IAuthService authService)
+        public async Task Invoke(HttpContext httpContext, IAuthService authService)
         {
+            if (httpContext.Request.Path.StartsWithSegments("/api/auth/authenticate") || httpContext.Request.Path.StartsWithSegments("/api/auth/register"))
+            {
+                // If the request path matches, short-circuit the middleware pipeline
+                await _next(httpContext);
+                return;
+            }
+
             var token = httpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
-            if(token != null)
+
+            if (token != null)
             {
                 await AttachUserToContext(httpContext, authService, token);
             }
-            return _next(httpContext);
+
+            await _next(httpContext);
         }
-        private async Task AttachUserToContext(HttpContext httpContext, IAuthService authService, string token)
+        public async Task AttachUserToContext(HttpContext httpContext, IAuthService authService, string token)
         {
 
             // Access configuration settings
@@ -58,7 +67,7 @@ namespace PetCareSystem.WebApp.Helpers
                 //Attach user to context on successful JWT validation
                 httpContext.Items["User"] = await authService.GetById(userId);
             }
-            catch(Exception e) 
+            catch (Exception e)
             {
                 _logger.LogError(e, "Error occurred in JwtMiddleware.");
             }

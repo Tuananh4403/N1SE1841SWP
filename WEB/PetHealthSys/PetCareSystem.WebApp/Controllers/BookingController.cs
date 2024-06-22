@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
+// using Microsoft.AspNetCore.Authorization;
+using PetCareSystem.WebApp.Helpers;
 using PetCareSystem.Services.Models.Booking;
 using PetCareSystem.Services.Services.Bookings;
 using System;
@@ -12,6 +13,7 @@ namespace PetCareSystem.WebApp.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class BookingController : ControllerBase
     {
         private readonly IBookingServices _services;
@@ -31,9 +33,11 @@ namespace PetCareSystem.WebApp.Controllers
             }
             try
             {
-                var result = await _services.CreateBookingAsync(model);
+                var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var result = await _services.CreateBookingAsync(model, token);
                 if (result)
                 {
+                    Console.WriteLine(result);
                     return Ok("Booking created successfully");
                 }
                 return BadRequest("Failed to create booking");
@@ -76,7 +80,9 @@ namespace PetCareSystem.WebApp.Controllers
 
             try
             {
-                var result = await _services.UpdateBookingAsync(id, model);
+                var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+
+                var result = await _services.UpdateBookingAsync(id, model, token);
                 if (result)
                 {
                     return Ok("Booking updated successfully");
