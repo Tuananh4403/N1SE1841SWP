@@ -56,6 +56,24 @@ The Pet Care Management System is designed to streamline the management of pet h
 This image illustrates the primary user interface of the Pet Care Management System, showcasing the main dashboard accessible by customers, employees, veterinarians, and admins. 
 
 By using this system, pet care services can be managed more efficiently, providing better care for pets and a smoother experience for their owners.
-Ph?m Tr?n Anh Tu?nUS-1Lê Hoài ThôngUS-5Nguy?n Lê ChiUS-2Lê H?u H?i TríUS-24L?u Quang V?US-23Phan Quang KhaUS-33
-SprintUser StorySprint 1US-1, US-2, US-5, US-23, US-24, US-33, US-28Sprint 2US-13, US-14, US-15, US-16, US-17, US-18, US-19, US-20, US-21, US-22, US-4, US-6, US-11, US-12Sprint 3US-25, US-26, US-27, US-28, US-29, US-30, US-31, US-32, US-34, US-35, US-36, US-37, US-7, US-8, US-9, US-10Sprint 4US-38, US-39, US-40, US-41, US-42, US-43, US-44, US-45, US-46, US-47, US-48, US-49, US-50, US-51, US-52
+
+
+| Name                     | User Stories        |
+|--------------------------|---------------------|
+| Pham Tran Anh Tuan       | US-1                |
+| Le Hoai Thong            | US-5                |
+| Nguyen Le Chi            | US-2                |
+| Le Huu Hai Tri           | US-24               |
+| Luu Quang Vu             | US-23               |
+| Phan Quang Kha           | US-33               |
+
+
+
+| Sprint   | User Stories                                                                                                |
+|----------|-------------------------------------------------------------------------------------------------------------|
+| Sprint 1 | US-1, US-2, US-23, US-24, US-33, US-5                                                                       |
+| Sprint 2 | US-13, US-14, US-15, US-16, US-17, US-18, US-19, US-20, US-21, US-22, US-4, US-5, US-6, US-11, US-12        |
+| Sprint 3 | US-25, US-26, US-27, US-28, US-29, US-30, US-31, US-32, US-34, US-35, US-36, US-37, US-7, US-8, US-9, US-10 |
+| Sprint 4 | US-38, US-39, US-40, US-41, US-42, US-43, US-44, US-45, US-46, US-47, US-48, US-49, US-50, US-51, US-52     |
+
 
